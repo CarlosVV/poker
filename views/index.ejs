@@ -13,7 +13,13 @@
       <fieldset>
         <form action="/" method="post">
           <input name="option" type="hidden" value="next">
-          <div>Hand 1</div>
+          <div>
+              <ul>
+                <% for(var i=0; i < supplies.length; i++) {%>
+                    <li><%= supplies[i] %></li>
+                <% } %>
+             </ul>
+          </div>
           <div>Hand 2</div>
           <div>Result</div>
           <input type="submit" class="ghost-button" value="Next">

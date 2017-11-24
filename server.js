@@ -50,8 +50,8 @@ app.post('/', function (req, res) {
       let decks = response;
       console.log(decks);
       if(decks !== null){
-        let decksText = `Number: ${decks[0].number}, Suit: ${decks[0].suit}`;
-        res.render('index', {decks: decksText, error: null});
+        //let decksText = `Number: ${decks[0].number}, Suit: ${decks[0].suit}`;
+        res.render('index', {decks: decks, error: null});
       }
       else {
         res.render('index', {decks: null, error: 'Error, please try again'});
