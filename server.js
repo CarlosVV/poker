@@ -9,7 +9,7 @@ const FileStore = require('session-file-store')(session);
 const rp = require('request-promise');
 require('ssl-root-cas').inject();
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-let urlApi = 'https://services.comparaonline.com/dealer';
+let urlApi = 'https://services.comparaonline.com/dealer/deck';
 
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -18,7 +18,7 @@ app.set('view engine', 'ejs');
 
 app.use(session({
   name: 'server-session-cookie-id',
-  secret: 'my express secret',
+  secret: 'c592dc58-eaaf-48eb-aae9-572d5fb84280',
   saveUninitialized: true,
   resave: true,
   store: new FileStore()
@@ -29,55 +29,47 @@ app.use(function printSession(req, res, next) {
 });
 
 app.get('/', function (req, res) {
-  if (typeof req.session.views === 'undefined') {
-    req.session.views = 1;
-  }
-
-  let url = `https://${urlApi}/deck`;
-
+  let url = `${urlApi}`;
   var options = {
       uri: url,
       method: 'POST',
       headers: {
-       'User-Agent': 'Request-Promise'
+       'User-Agent': 'Poker-Web-App-Technical-Test-CValderrama'
       },
       json: false
   };
 
   rp(options)
-    .then(function (body) {
-      console.log(body);
-      let apiKey = body;
+    .then(function (apiKey) {
       req.session.token = apiKey;
-      res.render('index');
+      res.render('index', {decks: null, error: ''});
      })
     .catch(function (err) {
+       console.log(err.message);
        res.render('index', {decks: null, error: 'Error,  please try again'});
     });
 })
 
 app.post('/', function (req, res) {
-  //console.log(req.body.option);
   let apiKey = req.session.token;
   let deck = 5;
   let url = `${urlApi}/${apiKey}/deal/${deck}`;
-  console.log(url);
 
   var options = {
       uri: url,
       headers: {
-       'User-Agent': 'Request-Promise'
+       'User-Agent': 'Poker-Web-App-Technical-Test-CValderrama'
       },
       json: true
   };
 
   rp(options)
-    .then(function (body) {
-      let decks = JSON.parse(body);
+    .then(function (decks) {
       let decksText = `Number: ${decks[0].number}, Suit: ${decks[0].suit}`;
       res.render('index', {decks: decksText, error: null});
      })
     .catch(function (err) {
+        console.log(err);
         res.render('index', {decks: null, error: 'Error, please try again'});
     });
 })
