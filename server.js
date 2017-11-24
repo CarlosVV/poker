@@ -28,29 +28,35 @@ app.use(session({
 
 app.get('/', function (req, res) {
 
-  let apiKey = client.getDeck(urlApi);
-  //console.log("apikey = ", apiKey);
-  if(apiKey !== null){
-    req.session.token = apiKey;
-    res.render('index', {decks: null, error: ''});
-  }
-  else{
-    res.render('index', {decks: null, error: 'Error,  please try again'});
-  }
+  client.getDeck(urlApi)
+  .then(function(response) {
+      let apiKey = response;
+      console.log("apiKey = " + apiKey);
+      if(apiKey !== null){
+        req.session.token = apiKey;
+        res.render('index', {decks: null, error: ''});
+      }
+      else{
+        res.render('index', {decks: null, error: 'Error,  please try again'});
+      }
+  });
 })
 
 app.post('/', function (req, res) {
+
   let apiKey = req.session.token;
   let deal = 5;
-  let decks = client.getDeal(urlApi, apiKey, deal);
-
- if(decks !== null){
-   let decksText = `Number: ${decks[0].number}, Suit: ${decks[0].suit}`;
-   res.render('index', {decks: decksText, error: null});
- }
- else {
-   res.render('index', {decks: null, error: 'Error, please try again'});
- }
+  let decks = client.getDeal(urlApi, apiKey, deal).then(function(response) {
+      let decks = response;
+      console.log(decks);
+      if(decks !== null){
+        let decksText = `Number: ${decks[0].number}, Suit: ${decks[0].suit}`;
+        res.render('index', {decks: decksText, error: null});
+      }
+      else {
+        res.render('index', {decks: null, error: 'Error, please try again'});
+      }
+  });
 })
 
 var server = app.listen(3000, function () {
